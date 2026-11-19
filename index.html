@@ -35,7 +35,7 @@
         window.addEventListener('error',function(e){ __diag('ERRORE: '+(e.message||'')+' '+(e.filename||(e.target&&(e.target.src||e.target.href))||'')+':'+(e.lineno||'')); },true);
         window.addEventListener('unhandledrejection',function(e){ __diag('PROMISE: '+(e.reason&&(e.reason.stack||e.reason.message)||e.reason)); });
         __diag('HTML ok - '+navigator.userAgent.replace(/.*OS ([\d_]+).*/,'iOS $1'));
-        setTimeout(function(){ if(!document.querySelector('.init-scene')) __diag('Dopo 8s il gioco non e partito (JS non avviato)'); else d.textContent=''; },8000);
+        setTimeout(function(){ if(!document.querySelector('#screen *')) __diag('Dopo 25s il gioco non e partito (JS non avviato)'); else d.textContent=''; },25000);
       })();
     </script>
 
@@ -44,12 +44,23 @@
             <div id="screen"></div>
         </div>
     </div>
-    <script type="module" src="./src/js/bootstrap.js"></script>
     <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js').then(() => navigator.serviceWorker.ready)
-          .then(reg => reg.active && reg.active.postMessage('precache')).catch(e => window.__diag && __diag('SW: ' + e));
-      }
+      (function(){
+        var started = false;
+        function start(){
+          if (started) return; started = true;
+          var s = document.createElement('script'); s.type = 'module'; s.src = './src/js/bootstrap.js';
+          document.body.appendChild(s);
+        }
+        if (!('serviceWorker' in navigator)) return start();
+        // Primo avvio: aspetta che il codice sia salvato per l'offline, poi avvia il gioco
+        if (navigator.serviceWorker.controller) start();
+        else {
+          navigator.serviceWorker.addEventListener('controllerchange', start);
+          setTimeout(start, 60000);
+        }
+        navigator.serviceWorker.register('./sw.js').catch(function(e){ window.__diag && __diag('SW: ' + e); start(); });
+      })();
     </script>
 </body>
 </html>
