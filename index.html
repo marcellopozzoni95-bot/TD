@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="PokéPath">
+    <link rel="apple-touch-icon" href="./src/assets/icon.png">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <style>html,body{background:#000;overscroll-behavior:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}</style>
+    <title>PokéPath TD</title>
+    <link rel="icon" type="image/x-icon" href="./src/assets/icon.ico">
+
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./src/css/ui.css">
+    <link rel="stylesheet" href="./src/css/scenes.css">
+    <link rel="stylesheet" href="./src/css/map.css">
+    <link rel="stylesheet" href="./src/css/menu.css">
+    <link rel="stylesheet" href="./src/css/profile.css">
+    <link rel="stylesheet" href="./src/css/box.css">
+    <link rel="stylesheet" href="./src/css/inventory.css">
+    <link rel="stylesheet" href="./src/css/shop.css">
+    <link rel="stylesheet" href="./src/css/challenge.css">
+    <link rel="stylesheet" href="./src/css/editor.css">
+</head>
+<body>
+    <div id="diag" style="position:fixed;left:8px;bottom:8px;right:8px;z-index:99999;color:#ff6;font:12px monospace;white-space:pre-wrap;pointer-events:none"></div>
+    <script>
+      (function(){
+        var d=document.getElementById('diag'), t0=Date.now();
+        window.__diag=function(m){ d.textContent += m + "\n"; };
+        window.addEventListener('error',function(e){ __diag('ERRORE: '+(e.message||'')+' '+(e.filename||(e.target&&(e.target.src||e.target.href))||'')+':'+(e.lineno||'')); },true);
+        window.addEventListener('unhandledrejection',function(e){ __diag('PROMISE: '+(e.reason&&(e.reason.stack||e.reason.message)||e.reason)); });
+        __diag('HTML ok - '+navigator.userAgent.replace(/.*OS ([\d_]+).*/,'iOS $1'));
+        setTimeout(function(){ if(!document.querySelector('.init-scene')) __diag('Dopo 8s il gioco non e partito (JS non avviato)'); else d.textContent=''; },8000);
+      })();
+    </script>
+
+   <div id="view-port">
+        <div id="screen-root">
+            <div id="screen"></div>
+        </div>
+    </div>
+    <script type="module" src="./src/js/bootstrap.js"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').then(() => navigator.serviceWorker.ready)
+          .then(reg => reg.active && reg.active.postMessage('precache')).catch(e => window.__diag && __diag('SW: ' + e));
+      }
+    </script>
+</body>
+</html>
+
+
+
